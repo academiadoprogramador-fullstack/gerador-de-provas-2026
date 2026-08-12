@@ -49,21 +49,21 @@ jobs:
           dotnet-version: "10.x"
 
       - name: Restore dependencies
-        run: dotnet restore src/eAgenda.WebApp/eAgenda.WebApp.csproj
+        run: dotnet restore src/GeradorDeProvas.WebApp/GeradorDeProvas.WebApp.csproj
 
       - name: Install Entity Framework CLI
         run: dotnet tool install --global dotnet-ef
 
       - name: Apply ORM migrations to AzureSQL
         env:
-          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURESQL_CONNECTION_STRING }}
+          AZURESQL_CONNECTION_STRING: ${{ secrets.AZURESQL_CONNECTION_STRING }}
           Infra__NewRelic__LicenseKey: ${{ secrets.NEWRELIC_LICENSE_KEY }}
         run: |
           dotnet ef database update `
-            --project src/eAgenda.Infra/eAgenda.Infra.csproj `
-            --startup-project src/eAgenda.WebApp/eAgenda.WebApp.csproj `
+            --project src/GeradorDeProvas.Infra/GeradorDeProvas.Infra.csproj `
+            --startup-project src/GeradorDeProvas.WebApp/GeradorDeProvas.WebApp.csproj `
             --configuration Release `
-            --connection "$env:AZURE_SQL_CONNECTION_STRING"
+            --connection "$env:AZURESQL_CONNECTION_STRING"
 
   deploy:
     runs-on: windows-latest
