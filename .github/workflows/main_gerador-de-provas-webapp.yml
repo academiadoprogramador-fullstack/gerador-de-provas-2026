@@ -21,7 +21,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.x'
+          dotnet-version: "10.x"
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -47,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -55,11 +55,22 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_773524982140484F97109C737374ED8C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A44548A00A614749942447D9F1B54D6A }}
 
+      # Atualizar variáveis de ambiente do Web App
+      - name: Configure Azure Web App settings
+        shell: pwsh
+        run: |
+          az webapp config appsettings set `
+            --resource-group "gerador-de-provas" `
+            --name "gerador-de-provas-webapp" `
+            --settings `
+              "ConnectionStrings__SqlServerEF=${{ secrets.AZURESQL_CONNECTION_STRING }}" `
+              "Infra__NewRelic__LicenseKey=${{ secrets.NEWRELIC_LICENSE_KEY }}" `
+              "Apresentacao__AutoMapper__LicenseKey=${{ secrets.AUTOMAPPER_LICENSE_KEY }}"
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'gerador-de-provas-webapp'
-          slot-name: 'Production'
+          app-name: "gerador-de-provas-webapp"
+          slot-name: "Production"
           package: .
-          
