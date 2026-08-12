@@ -26,6 +26,15 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
+      - name: Install Playwright Chromium
+        run: pwsh tests/GeradorDeProvas.Testes.E2E/bin/Release/net10.0/playwright.ps1 install chromium
+
+      - name: Run tests
+        run: |
+          dotnet test tests/GeradorDeProvas.Testes.Unidade/GeradorDeProvas.Testes.Unidade.csproj --configuration Release --no-build
+          dotnet test tests/GeradorDeProvas.Testes.Integracao/GeradorDeProvas.Testes.Integracao.csproj --configuration Release --no-build
+          dotnet test tests/GeradorDeProvas.Testes.E2E/GeradorDeProvas.Testes.E2E.csproj --configuration Release --no-build --settings tests/GeradorDeProvas.Testes.E2E/playwright.runsettings
+
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
